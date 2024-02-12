@@ -1,0 +1,26 @@
+
+###
+GET http://localhost:5000/api/tickets
+
+###
+POST http://localhost:5000/api/ticket
+Content-Type: application/json
+
+{
+    "title": "last",
+    "description": "this is the before last post"
+}
+
+###
+DELETE http://localhost:5000/api/ticket/65806d7c6827d7028fc2cb0c
+
+
+###
+PUT http://localhost:5000/api/update-ticket/658052e53d2bf9efef845977
+Content-Type: application/json
+
+{
+    "title": "beginning",
+    "description": "this is the first patch post"
+}
+
