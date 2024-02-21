@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import User from "../model/userModel.js";
 import { generateToken } from "../helpers/generateToken.js";
 import asyncHandler from "express-async-handler";
+import { sendEmail } from "../helpers/sendEmail.js";
 
 export const signup = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -85,20 +86,41 @@ export const logout = (req, res) => {
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
-  const exist = await User.findOne({ email })
-  const user = new User();
-
+  const user = await User.findOne({ email });
+  // const user = new User();
+  // await user.save;
   // User.generateToken()
 
-  if (exist) {
+  if (user) {
     const token = user.generatePasswordToken();
-    const emailUrl = `https:localhost:8082/forgot-password/${token}`
+
+    await user.save({validateBeforeSave: false})
+
+    const emailUrl = `https:localhost:8082/reset-password/${token}`;
+
+    const message = `Hello ${user.email},\n\nPlease click on the following link to reset your password:\n\n${emailUrl}\n\nThis link expires in 10 minutes\n\nIf you did not make this request, please ignore this email and your password will remain unchanged.\n\nSincerely,\nAbigail`
+
+    const options = {
+      email: user.email,
+      subject: 'Password rest request',
+      text: message
+    }
+
+    const send = await sendEmail(options)
+
+    if (send) {
+      res.status(200).json({message: "success", send })
+    } else {
+      res.status(500)
+      throw new Error("Email could not be sent")
+    }
+
 
   } else {
     res.status(404);
-    throw new Error("Email not found please signup")
+    throw new Error("Email not found please signup");
   }
-})
+});
 
 export const allTicketsByUser = asyncHandler(async (req, res) => {
   const { id } = req.params;

@@ -30,7 +30,7 @@ const UserSchema = new Schema(
       },
     ],
     passwordResetToken: String,
-    passwordResetTokenExpiry: String,
+    passwordResetTokenExpiry: Date,
   },
   {
     timestamps: true,
